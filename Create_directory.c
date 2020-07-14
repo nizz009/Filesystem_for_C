@@ -1,3 +1,5 @@
+//Creates a single directory in the same filepath as that of the program
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
