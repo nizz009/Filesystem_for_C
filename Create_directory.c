@@ -9,24 +9,23 @@
 #include <string.h>
 
 
-bool create_directory(char s[], char filepath[])
+bool create_directory(char s[])
 {
    #ifdef _WIN32
-   return _mkdir(s, filepath);
+   return _mkdir(s);
    #else
-   return mkdir(s, filepath, 0777);
+   return mkdir(s, 0777);
    #endif
 }
 
 int main()
 {
    char s[1000] = {'\0'};
-   char filepath[10000] = {'\0'};
 
-   scanf("%s %s", s, filepath);
+   scanf("%s", s);
 
-   if(!create_directory(s, filepath))
-      printf("Directory Created.");
+   if(!create_directory(s))
+      printf("Directory Created Successfully.");
    else
       printf("Error!");
 
