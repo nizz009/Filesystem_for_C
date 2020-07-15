@@ -1,4 +1,5 @@
-//Create multiple directories
+//Analogous to fs::create_directories(filepath)
+//Creates multiple directies (Nested) without the use of recursion
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,42 +24,55 @@ bool create_directory(char s[])
    #ifdef _WIN32
    return _mkdir(s);
    #else
-   return mkdir(s, 0777);
+   return mkdir(s, 0755);
    #endif
 }
 
-bool create_directories(char files[])
+bool create_directories(char filepath[])
 {
+   //To show the name of the directory to be created(temp) and the path(dir)
    char temp[1000] = { '\0' };
-   int pos = 0;
+   char dir[1000] = { '\0' };
+   int posdir = 0, postemp = 0;
    const char *p;
 
-   p = files;
+   p = filepath;
+   dir[posdir++] = *p;
    #ifdef _WIN32
-   if ((p = strchr(files, ':')) != NULL)
+   if ((p = strchr(filepath, ':')) != NULL)
+   {
+      dir[posdir++] = *p;
       p++;
+   }
    #endif
-
+   
+   dir[posdir++] = *p;
+   dir[posdir + 1] = '\0';
    p++;
+
    while(*p != '\0')
    {
-      pos = 0;
+      postemp = 0;
       while(*p != '\0' && *p != SEP)
       {
-         temp[pos++] = *p;
+         temp[postemp++] = *p;
          p++;
       }
 
-      temp[pos++] = '\0';
+      temp[postemp++] = '\0';
 
+      chdir(dir);
       if(create_directory(temp) == -1)
-      {
          return false;
-      }
       else
-      {
          p++;
-      }
+
+      dir[posdir++] = SEP;
+
+      for(postemp = 0; temp[postemp] != '\0'; postemp++)
+         dir[posdir++] = temp[postemp];
+      
+      dir[posdir + 1] = '\0';
    }
 
    return true;
@@ -66,11 +80,11 @@ bool create_directories(char files[])
 
 int main()
 {
-   char files[10000] = {'\0'};
+   char filepath[10000] = {'\0'};
+   
+   scanf("%s", filepath);
 
-   scanf("%s", files);
-
-   if(create_directories(s, files))
+   if(create_directories(filepath))
       printf("Directories Created.");
    else
       printf("Error!");
