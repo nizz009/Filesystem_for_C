@@ -101,7 +101,7 @@ int main()
    char filepath[10000] = {'\0'};
    char data[1000] = { '\0' };
    
-   scanf("%s %s", filepath, data);
+   scanf("%s %[^\n]", filepath, data);
 
    write_to_file(filepath, data);
 
