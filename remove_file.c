@@ -1,4 +1,4 @@
-//Opens, read and writes the data from a file with a given filepath 
+//Removes a file with a given filepath 
 
 #include <stdio.h>
 #include <stdlib.h>
