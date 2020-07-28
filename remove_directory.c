@@ -1,5 +1,6 @@
-//Analogous to fs::create_directories(filepath)
-//Creates multiple directies (Nested) without the use of recursion
+//Analogous to fs::remove_all(filepath);
+//Deletes the folder using its filepath including all its contents.
+//Uses recursion to tranverse the folder tree and deletes them on the order of their sequence. 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +9,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <string.h>
+#include <dirent.h>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -21,11 +23,14 @@ const char SEP = '/';
 
 bool remove_directory(char filepath[])
 {
+    DIR *folder;
+    struct dirent *entry;
     //To show the name of the directory to be created(temp) and the path(dir)
-    char temp[1000] = { '\0' };
+    char *temp;
     char dir[1000] = { '\0' };
     int posdir = 0, postemp = 0;
     const char *p;
+    const char *q;
 
     p = filepath;
     dir[posdir++] = *p;
@@ -41,11 +46,41 @@ bool remove_directory(char filepath[])
     dir[posdir + 1] = '\0';
     p++;
 
-    while(*p != '\0')
+    folder = opendir(filepath);
+    while( (entry=readdir(folder)) )
     {
+        if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
+        {
+            continue;
+        }
+        else
+        {
+            q = entry->d_name;
         
+            // determinate a full path of an entry
+            temp = calloc(strlen(filepath) + strlen(entry->d_name) + 1, sizeof(char));
+            strcpy(temp, filepath);
+            #ifdef _WIN32
+            strcat(temp, "\\");
+            #else
+            strcat(temp, "/");
+            #endif
+            strcat(temp, entry->d_name);
+
+            //if the content is a folder
+            if((q = strchr(entry->d_name, '.')) == NULL)
+            {
+                remove_directory(temp);
+            }
+            //content is a file
+            else
+            {
+                remove(temp);
+            }
+        }
     }
 
+    rmdir(filepath);
     return true;
 }
 
